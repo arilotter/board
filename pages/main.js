@@ -115,7 +115,7 @@ module.exports = function main(req, res) {
     parseForm(req, {}, (_, post) => {
       const finish = () => {
         res.statusCode = 303;
-        res.setHeader("Location", `/`);
+        res.setHeader("Location", `${consts.BASE_PATH}/`);
         res.end("Redirecting...");
       };
       if (!post) {
