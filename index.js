@@ -9,6 +9,10 @@ const port = process.env.PORT || 3000;
 // A route is a function `(req, res) => boolean`.
 // It should return true if it handled the request, false otherwise.
 const routes = [
+  (_, r, __) => {
+    r.setHeader("Content-Type", "text/html; charset=UTF-8");
+    return false;
+  },
   login,
   logout,
   main,
