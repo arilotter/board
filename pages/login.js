@@ -1,5 +1,7 @@
 const parseForm = require("body/form");
 
+const consts = require("../consts");
+
 const PASSWORD = "e";
 
 function login(req, res) {
@@ -10,18 +12,20 @@ function login(req, res) {
   const path = req.url;
 
   // Redirect all non-logged-in users to the login page
-  if (!isLoggedIn && path !== "/password") {
+  if (!isLoggedIn && path !== `${consts.BASE_PATH}/password`) {
     res.statusCode = 303;
-    res.setHeader("Location", "/password");
+    res.setHeader("Location", `${consts.BASE_PATH}/password`);
     res.end();
     return true;
   }
 
-  if (path !== "/password") {
+  if (path !== `${consts.BASE_PATH}/password`) {
     return false;
   }
   if (isLoggedIn) {
-    res.end(`<p>You're already logged in :)</p><a href="/"> Go Home</a>`);
+    res.end(
+      `<p>You're already logged in :)</p><a href="${consts.BASE_PATH}/"> Go Home</a>`
+    );
     return true;
   }
   if (req.method === "GET") {
@@ -44,10 +48,10 @@ function login(req, res) {
       res.statusCode = 303;
 
       if (PASSWORD === passedPassword) {
-        res.setHeader("Location", "/");
+        res.setHeader("Location", `${consts.BASE_PATH}/`);
         res.setHeader("Set-Cookie", [`password=${passedPassword}`]);
       } else {
-        res.setHeader("Location", "/password");
+        res.setHeader("Location", `${consts.BASE_PATH}/password`);
         res.setHeader("Method", "GET");
       }
 

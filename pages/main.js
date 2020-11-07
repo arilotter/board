@@ -47,10 +47,10 @@ const inputElements = {
 
 module.exports = function main(req, res) {
   // Main page
-  if (req.url === "/") {
+  if (req.url === `${BASE_PATH}/`) {
     res.end(`
     <h1>Welcome!</h1>
-    <a href="/logout">Log out</a>
+    <a href="${BASE_PATH}/logout">Log out</a>
     ${
       // For each board,
       boards.reduce((str, board) => {
@@ -59,7 +59,7 @@ module.exports = function main(req, res) {
         // A "post" form,
         str += `
       <h3>Post to ${board.name}</h3>
-      <form method="POST" action="/post">
+      <form method="POST" action="${BASE_PATH}/post">
         <input type="hidden" name="board" value="${board.name}">
       `;
         for (let fieldName of Object.keys(board.fields)) {
@@ -107,7 +107,7 @@ module.exports = function main(req, res) {
     return true;
   }
 
-  if (req.url.split("?")[0] === "/post" && req.method === "POST") {
+  if (req.url.split("?")[0] === `${BASE_PATH}/post` && req.method === "POST") {
     // We got a post message request!
     parseForm(req, {}, (_, post) => {
       const finish = () => {
@@ -125,7 +125,7 @@ module.exports = function main(req, res) {
         res.end(`
           <h1>post failed</h1>
           <p>unknown board ${post.board}</p>
-          <a href="/">go home</a>
+          <a href="${BASE_PATH}/">go home</a>
         `);
         return;
       }
@@ -137,7 +137,7 @@ module.exports = function main(req, res) {
         res.end(`
           <h1>post failed</h1>
           <p>${e}</p>
-          <a href="/">go home</a>
+          <a href="${BASE_PATH}/">go home</a>
         `);
         return;
       }
