@@ -1,4 +1,8 @@
 const parseForm = require("body/form");
+const fs = require("fs");
+const path = require("path");
+
+const FILENAME = "./database.json";
 
 const consts = require("../consts");
 const validations = require("../validations");
@@ -19,20 +23,7 @@ const boards = [
   }),
 ];
 
-////////////////////////////////////////////////////////////////
-// fill up a board with junk
-const chars = " qwerty uiop sdfg hjkl zxc vbnm";
-for (let i = 0; i < 30; i++) {
-  boards[0].add({
-    Title: Array.from(
-      { length: Math.round(Math.random() * (consts.TITLE_CHAR_LIMIT - 1)) + 1 },
-      (_) => chars[Math.round(Math.random() * chars.length) - 1]
-    ).join(""),
-    URL: "https://example.com",
-    Username: "Robot",
-  });
-}
-////////////////////////////////////////////////////////////////
+loadBoards();
 
 const inputTypes = {
   url: "url",
@@ -44,6 +35,36 @@ const inputElements = {
   default: "input",
   text: "textarea",
 };
+
+function saveBoards() {
+  const string = JSON.stringify(
+    boards.map((board) => ({
+      name: board.name,
+      posts: board.posts,
+    })),
+    null,
+    2
+  );
+  const filePath = path.join(process.cwd(), FILENAME);
+  fs.writeFileSync(filePath, string);
+}
+
+function loadBoards() {
+  const filePath = path.join(process.cwd(), FILENAME);
+  try {
+    const string = fs.readFileSync(filePath, "utf8");
+    const loadedBoards = JSON.parse(string);
+    for (let board of boards) {
+      const loadedBoard = loadedBoards.find((b) => b.name === board.name);
+      if (loadedBoard) {
+        console.info("Loading board", loadedBoard.name);
+        board.posts = loadedBoard.posts;
+      }
+    }
+  } catch (err) {
+    console.warn("Didn't load boards.", err);
+  }
+}
 
 module.exports = function main(req, res) {
   // Main page
@@ -135,6 +156,7 @@ module.exports = function main(req, res) {
 
       try {
         board.add(post);
+        saveBoards();
       } catch (e) {
         res.statusCode = 400;
         res.end(`

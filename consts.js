@@ -4,5 +4,5 @@ module.exports = {
   USERNAME_CHAR_LIMIT: 64,
   URL_CHAR_LIMIT: 1024,
   BODY_CHAR_LIMIT: 4096,
-  BASE_PATH: "/",
+  BASE_PATH: "",
 };
