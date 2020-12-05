@@ -37,6 +37,7 @@ const inputElements = {
 };
 
 function saveBoards() {
+  console.log("Saving boards...");
   const string = JSON.stringify(
     boards.map((board) => ({
       name: board.name,
