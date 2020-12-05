@@ -69,61 +69,60 @@ function loadBoards() {
 module.exports = function main(req, res) {
   // Main page
   if (req.url === `${consts.BASE_PATH}/`) {
-    res.end(`
-    <h1>Welcome!</h1>
-    <a href="${consts.BASE_PATH}/logout">Log out</a>
-    ${
+    const boardsContent = boards.reduce((str, board) => {
       // For each board,
-      boards.reduce((str, board) => {
-        // Print its title,
-        str += `<h2>${board.name}</h2>`;
-        // A "post" form,
-        str += `
-      <h3>Post to ${board.name}</h3>
-      <form method="POST" action="${consts.BASE_PATH}/post">
-        <input type="hidden" name="board" value="${board.name}">
-      `;
-        for (let fieldName of Object.keys(board.fields)) {
-          const fieldElement =
-            inputElements[fieldName.toLowerCase()] || inputElements.default;
+      // Print its title,
+      str += `<h2>${board.name}</h2>`;
+      // A "post" form,
+      str += `
+    <h3>Post to ${board.name}</h3>
+    <form method="POST" action="${consts.BASE_PATH}/post">
+      <input type="hidden" name="board" value="${board.name}">
+    `;
+      for (let fieldName of Object.keys(board.fields)) {
+        const fieldElement =
+          inputElements[fieldName.toLowerCase()] || inputElements.default;
 
-          const fieldType =
-            inputTypes[fieldName.toLowerCase()] || inputTypes.default;
-
-          str += `
-            <label for="${fieldName}">${fieldName}:
-            </label>
-
-            <${fieldElement} type="${fieldType}" name="${fieldName}" required></${fieldElement}>
-          `;
-        }
+        const fieldType =
+          inputTypes[fieldName.toLowerCase()] || inputTypes.default;
 
         str += `
-        <input type="submit" value="Submit Post">
-      </form>`;
+          <label for="${fieldName}">${fieldName}:
+          </label>
 
-        // And print all the posts in the board.
-        str += "<ol>";
-        for (let post of [...board.posts].reverse()) {
-          str += `<li>`;
-          str += `<${new Date(post.timestamp).toLocaleTimeString("en-CA", {
-            timeZone: "Canada/Eastern",
-            hour12: true,
-            hour: "numeric",
-            minute: "numeric",
-          })}> [${post.Username}] `;
-          if ("URL" in post) {
-            str += `<a href=${post.URL}>${post.Title}</a>`;
-          }
-          if ("Text" in post) {
-            str += `<p>${post.Text}</p>`;
-          }
+          <${fieldElement} type="${fieldType}" name="${fieldName}" required></${fieldElement}>
+        `;
+      }
+
+      str += `
+      <input type="submit" value="Submit Post">
+    </form>`;
+
+      // And print all the posts in the board.
+      str += "<ol>";
+      for (let post of [...board.posts].reverse()) {
+        str += `<li>`;
+        str += `&lt;${new Date(post.timestamp).toLocaleTimeString("en-CA", {
+          timeZone: "Canada/Eastern",
+          hour12: true,
+          hour: "numeric",
+          minute: "numeric",
+        })}&gt; [${post.Username}] `;
+        if ("URL" in post) {
+          str += `<a href=${post.URL}>${post.Title}</a>`;
         }
-        str += "</ol>";
+        if ("Text" in post) {
+          str += `<p>${post.Text}</p>`;
+        }
+      }
+      str += "</ol>";
 
-        return str;
-      }, "")
-    }
+      return str;
+    }, "");
+    res.end(`
+      <h1>Welcome!</h1>
+      <a href="${consts.BASE_PATH}/logout">Log out</a>
+      ${boardsContent}
     `);
     return true;
   }
